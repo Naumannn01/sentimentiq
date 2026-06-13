@@ -11,4 +11,5 @@ urlpatterns = [
     path('webhooks/',           views.WebhookSubscriptionView.as_view(), name='webhook-list'),
     path('webhooks/<uuid:id>/', views.WebhookDetailView.as_view(),      name='webhook-detail'),
     path('webhooks/<uuid:id>/logs/', views.WebhookLogView.as_view(),    name='webhook-logs'),
+    path('hotels/', views.HotelListView.as_view(), name='hotel-list'),
 ]

@@ -153,3 +153,16 @@ class WebhookLogView(generics.ListAPIView):
         return WebhookLog.objects.filter(
             subscription_id=self.kwargs['id']
         ).order_by('-fired_at')
+    
+
+class HotelListView(APIView):
+    """GET /api/v1/hotels/ — list all hotels with review counts."""
+
+    def get(self, request):
+        hotels = (
+            Review.objects.filter(status='done')
+            .values('hotel_name')
+            .annotate(review_count=Count('id'))
+            .order_by('-review_count')
+        )
+        return Response(list(hotels))
