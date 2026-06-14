@@ -4,3 +4,5 @@ __pycache__/
 .env
 *.db
 benchmark_results.json
+node_modules/
+dashboard/dist/

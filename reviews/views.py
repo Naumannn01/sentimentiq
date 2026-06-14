@@ -166,3 +166,11 @@ class HotelListView(APIView):
             .order_by('-review_count')
         )
         return Response(list(hotels))
+    
+class WebhookSubscriptionView(generics.ListCreateAPIView):
+    """GET/POST /api/v1/webhooks/ — list or register a webhook."""
+    serializer_class = WebhookSubscriptionSerializer
+    queryset = WebhookSubscription.objects.all().order_by('-created_at')
+
+    def perform_create(self, serializer):
+        serializer.save(is_active=True)

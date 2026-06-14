@@ -221,3 +221,277 @@ th {
 @media (max-width: 768px) {
   .charts-row { grid-template-columns: 1fr; }
 }
+
+.submit-form {
+  background: #1e293b;
+  border-radius: 12px;
+  padding: 1.25rem;
+  border: 1px solid #334155;
+  margin-bottom: 2rem;
+}
+
+.submit-form h3 {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+}
+
+.submit-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.submit-form input,
+.submit-form textarea {
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-size: 0.95rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.submit-form button {
+  padding: 0.7rem 1.5rem;
+  border-radius: 8px;
+  border: none;
+  background: #6366f1;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.submit-form button:hover:not(:disabled) {
+  background: #4f46e5;
+}
+
+.submit-form button:disabled {
+  background: #475569;
+  cursor: not-allowed;
+}
+
+.result-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.result-label {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.result-aspects {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.result-model {
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.result-card button {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: transparent;
+  color: #e2e8f0;
+  cursor: pointer;
+  align-self: flex-start;
+}
+
+.result-card button:hover {
+  background: #334155;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: #1e293b;
+  border-bottom: 1px solid #334155;
+}
+
+.brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tabs button {
+  padding: 0.5rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: #94a3b8;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tabs button.active {
+  background: #6366f1;
+  color: white;
+}
+
+.full-width {
+  max-width: 900px;
+}
+
+/* Webhook page */
+.webhook-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.webhook-header h2 {
+  margin-bottom: 0.25rem;
+}
+
+.subtle {
+  color: #94a3b8;
+  font-size: 0.9rem;
+  max-width: 480px;
+}
+
+button.primary {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  background: #6366f1;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+button.primary:hover { background: #4f46e5; }
+
+.webhook-form {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.form-row label {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.form-row input, .form-row select {
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+.webhook-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.webhook-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+}
+
+.webhook-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.webhook-name {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.webhook-url {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  word-break: break-all;
+}
+
+.webhook-meta {
+  color: #64748b;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
+.webhook-meta code {
+  color: #94a3b8;
+}
+
+.webhook-actions {
+  display: flex;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+.webhook-actions button {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid #334155;
+  background: transparent;
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.webhook-actions button:hover {
+  background: #334155;
+}
+
+.webhook-actions button.danger:hover {
+  background: #450a0a;
+  border-color: #7f1d1d;
+}
+
+.webhook-logs {
+  margin-top: 1rem;
+  border-top: 1px solid #334155;
+  padding-top: 1rem;
+}
+
+.log-response {
+  font-family: monospace;
+  font-size: 0.75rem;
+  color: #64748b;
+}

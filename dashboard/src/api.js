@@ -14,4 +14,10 @@ export const api = {
 
   getReview: (id) =>
     axios.get(`${API_BASE}/reviews/${id}/`),
+
+  getWebhooks: () => axios.get(`${API_BASE}/webhooks/`),
+  createWebhook: (data) => axios.post(`${API_BASE}/webhooks/`, data),
+  updateWebhook: (id, data) => axios.patch(`${API_BASE}/webhooks/${id}/`, data),
+  deleteWebhook: (id) => axios.delete(`${API_BASE}/webhooks/${id}/`),
+  getWebhookLogs: (id) => axios.get(`${API_BASE}/webhooks/${id}/logs/`),
 };
