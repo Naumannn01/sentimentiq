@@ -3,6 +3,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count
+from django.db import connection
+from django.core.cache import cache
+from django.http import JsonResponse
+from django.views import View
+import hashlib
+from rest_framework.throttling import AnonRateThrottle
+from django.db.models.functions import TruncDate
 from .models import Review, Source, WebhookSubscription, WebhookLog
 from .serializers import (
     ManualReviewSerializer, PlatformReviewSerializer,
@@ -23,10 +30,13 @@ class ReviewSubmitView(generics.CreateAPIView):
             {'id': str(review.id), 'status': review.status},
             status=status.HTTP_201_CREATED
         )
-
+    
+class BulkSubmitThrottle(AnonRateThrottle):
+    scope = 'bulk_submit'
 
 class BulkReviewSubmitView(APIView):
     """POST /api/v1/reviews/bulk/ — up to 500 manual submissions."""
+    throttle_classes = [BulkSubmitThrottle]
 
     def post(self, request):
         serializer = BulkReviewSerializer(data=request.data)
@@ -94,6 +104,12 @@ class HotelStatsView(APIView):
     """GET /api/v1/stats/<hotel_name>/ — sentiment breakdown for a hotel."""
 
     def get(self, request, hotel_name):
+        cache_key = f"hotel_stats:{hashlib.md5(hotel_name.lower().encode()).hexdigest()}"
+        # cache_key = f"hotel_stats:{hotel_name.lower()}"
+        cached = cache.get(cache_key)
+        if cached is not None:
+            return Response(cached)
+
         reviews = Review.objects.filter(
             hotel_name__iexact=hotel_name,
             status='done'
@@ -109,7 +125,7 @@ class HotelStatsView(APIView):
             .order_by('-count')
         )
 
-        return Response({
+        result = {
             'hotel_name': hotel_name,
             'total_reviews': total,
             'breakdown': {
@@ -119,8 +135,10 @@ class HotelStatsView(APIView):
                 }
                 for b in breakdown
             }
-        })
+        }
 
+        cache.set(cache_key, result, timeout=120)  # 2 minutes
+        return Response(result)
 
 class SourceListView(generics.ListCreateAPIView):
     """GET/POST /api/v1/sources/"""
@@ -174,3 +192,61 @@ class WebhookSubscriptionView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(is_active=True)
+
+class HealthCheckView(View):
+    def get(self, request):
+        status = {"status": "ok", "checks": {}}
+        http_status = 200
+
+        try:
+            connection.ensure_connection()
+            status["checks"]["database"] = "ok"
+        except Exception as e:
+            status["checks"]["database"] = f"error: {e}"
+            status["status"] = "error"
+            http_status = 503
+
+        try:
+            cache.set("health_check", "ok", 5)
+            if cache.get("health_check") == "ok":
+                status["checks"]["redis"] = "ok"
+            else:
+                raise Exception("cache mismatch")
+        except Exception as e:
+            status["checks"]["redis"] = f"error: {e}"
+            status["status"] = "error"
+            http_status = 503
+
+        return JsonResponse(status, status=http_status)
+    
+
+class HotelTrendView(APIView):
+    """GET /api/v1/stats/<hotel_name>/trend/ — daily sentiment counts."""
+
+    def get(self, request, hotel_name):
+        reviews = Review.objects.filter(
+            hotel_name__iexact=hotel_name,
+            status='done'
+        ).select_related('sentiment')
+
+        if not reviews.exists():
+            return Response({'error': 'No reviews found.'}, status=404)
+
+        trend = (
+            reviews
+            .annotate(date=TruncDate('created_at'))
+            .values('date', 'sentiment__label')
+            .annotate(count=Count('id'))
+            .order_by('date')
+        )
+
+        data = {}
+        for row in trend:
+            date_str = row['date'].isoformat()
+            if date_str not in data:
+                data[date_str] = {'date': date_str, 'positive': 0, 'neutral': 0, 'negative': 0}
+            label = row['sentiment__label']
+            if label in data[date_str]:
+                data[date_str][label] = row['count']
+
+        return Response(sorted(data.values(), key=lambda x: x['date']))

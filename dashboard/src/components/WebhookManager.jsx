@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { api } from '../api';
+import toast from 'react-hot-toast';
+
 
 export default function WebhookManager() {
   const [webhooks, setWebhooks] = useState([]);
@@ -40,16 +42,16 @@ export default function WebhookManager() {
     e.preventDefault();
     if (!form.name.trim() || !form.target_url.trim()) return;
     setSubmitting(true);
-    setError('');
     try {
       const payload = { ...form };
       if (!payload.secret) delete payload.secret;
       await api.createWebhook(payload);
       setForm({ name: '', target_url: '', hotel_name: '', event: 'review.done', secret: '' });
       setShowForm(false);
+      toast.success('Webhook registered!');
       loadWebhooks();
     } catch {
-      setError('Failed to register webhook — check the URL and try again.');
+      toast.error('Failed to register webhook — check the URL.');
     } finally {
       setSubmitting(false);
     }
@@ -58,9 +60,10 @@ export default function WebhookManager() {
   const toggleActive = async (wh) => {
     try {
       await api.updateWebhook(wh.id, { is_active: !wh.is_active });
+      toast.success(wh.is_active ? 'Webhook disabled' : 'Webhook enabled');
       loadWebhooks();
     } catch {
-      setError('Failed to update webhook.');
+      toast.error('Failed to update webhook.');
     }
   };
 
@@ -68,11 +71,13 @@ export default function WebhookManager() {
     if (!confirm('Delete this webhook subscription?')) return;
     try {
       await api.deleteWebhook(id);
+      toast.success('Webhook deleted');
       loadWebhooks();
     } catch {
-      setError('Failed to delete webhook.');
+      toast.error('Failed to delete webhook.');
     }
   };
+
 
   const toggleLogs = async (id) => {
     if (expandedId === id) {
@@ -112,17 +117,17 @@ export default function WebhookManager() {
           <div className="form-row">
             <label>Name</label>
             <input name="name" placeholder="e.g. Hotel PMS Integration"
-                   value={form.name} onChange={handleChange} />
+              value={form.name} onChange={handleChange} />
           </div>
           <div className="form-row">
             <label>Target URL</label>
             <input name="target_url" placeholder="https://webhook.site/your-url"
-                   value={form.target_url} onChange={handleChange} />
+              value={form.target_url} onChange={handleChange} />
           </div>
           <div className="form-row">
             <label>Hotel filter (optional)</label>
             <input name="hotel_name" placeholder="Leave blank for all hotels"
-                   value={form.hotel_name} onChange={handleChange} />
+              value={form.hotel_name} onChange={handleChange} />
           </div>
           <div className="form-row">
             <label>Event</label>
@@ -134,7 +139,7 @@ export default function WebhookManager() {
           <div className="form-row">
             <label>Secret (optional)</label>
             <input name="secret" placeholder="Used to sign payloads with HMAC"
-                   value={form.secret} onChange={handleChange} />
+              value={form.secret} onChange={handleChange} />
           </div>
           <button type="submit" className="primary" disabled={submitting}>
             {submitting ? 'Registering...' : 'Register Webhook'}

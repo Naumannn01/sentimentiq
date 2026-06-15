@@ -20,4 +20,6 @@ export const api = {
   updateWebhook: (id, data) => axios.patch(`${API_BASE}/webhooks/${id}/`, data),
   deleteWebhook: (id) => axios.delete(`${API_BASE}/webhooks/${id}/`),
   getWebhookLogs: (id) => axios.get(`${API_BASE}/webhooks/${id}/logs/`),
+  getHotelTrend: (hotelName) =>
+  axios.get(`${API_BASE}/stats/${encodeURIComponent(hotelName)}/trend/`),
 };

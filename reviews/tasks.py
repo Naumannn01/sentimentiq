@@ -68,9 +68,12 @@ def process_review(self, review_id: str):
         review.status = Review.Status.DONE
         review.save(update_fields=['status', 'updated_at'])
 
-         # Fire webhooks async
-        fire_webhooks.delay(str(review.id))
+        # Invalidate cached stats for this hotel
+        from django.core.cache import cache
+        cache.delete(f"hotel_stats:{review.hotel_name.lower()}")
 
+        # Fire webhooks async
+        fire_webhooks.delay(str(review.id))
         return {"review_id": review_id, "label": data["label"]}
 
     except Review.DoesNotExist:

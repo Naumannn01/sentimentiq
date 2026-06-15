@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const API_BASE = 'http://localhost:8000/api/v1';
 
@@ -20,6 +21,8 @@ export default function ReviewSubmitForm({ onSubmitted }) {
       if (res.data.status === 'done') {
         setResult(res.data);
         setStatus('done');
+        toast.success(`Classified as ${res.data.sentiment.label}!`);
+
       } else {
         setTimeout(() => pollForResult(reviewId, attempts + 1), 1500);
       }
@@ -41,9 +44,12 @@ export default function ReviewSubmitForm({ onSubmitted }) {
 
       const res = await axios.post(`${API_BASE}/reviews/submit/`, payload);
       setStatus('polling');
+      toast.success('Review submitted — analyzing...');
       pollForResult(res.data.id);
     } catch {
       setStatus('error');
+      toast.error('Failed to submit review.');
+
     }
   };
 
